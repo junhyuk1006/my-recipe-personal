@@ -22,30 +22,8 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false, // Default to hidden, individual screens can enable/customize
         }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        {/* Auth Stack */}
-        <Stack.Screen name="Login" options={{ headerShown: false }} />
-        <Stack.Screen name="Signup" options={{ headerShown: false }} />
-        <Stack.Screen name="FindId" options={{ headerShown: false }} />
-        <Stack.Screen name="FindPassword" options={{ headerShown: false }} />
-        
-        {/* Feature Stacks */}
-        <Stack.Screen name="recipe/[id]" options={{ headerShown: false }} />
-        <Stack.Screen name="recipe/Write" options={{ headerShown: false }} />
-        <Stack.Screen name="notice/List" options={{ headerShown: false }} />
-        <Stack.Screen name="notice/[id]" options={{ headerShown: false }} />
-        
-        {/* Profile Stacks */}
-        <Stack.Screen name="profile/Edit" options={{ headerShown: false }} />
-        <Stack.Screen name="profile/MyRecipes" options={{ headerShown: false }} />
-        <Stack.Screen name="profile/MyComments" options={{ headerShown: false }} />
-        <Stack.Screen name="profile/MyLikes" options={{ headerShown: false }} />
-        <Stack.Screen name="profile/MyBookmarks" options={{ headerShown: false }} />
-        <Stack.Screen name="profile/Inquiry" options={{ headerShown: false }} />
-        <Stack.Screen name="profile/Terms" options={{ headerShown: false }} />
-        <Stack.Screen name="profile/InfluencerRegister" options={{ headerShown: false }} />
       </Stack>
-    <StatusBar style="dark" />
+      <StatusBar style="dark" />
       </ThemeProvider>
     </SafeAreaProvider>
   );

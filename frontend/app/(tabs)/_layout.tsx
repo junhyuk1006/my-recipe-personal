@@ -31,7 +31,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="Recipe"
+        name="recipe_temp"
         options={{
           title: '레시피',
           tabBarIcon: ({ color, size }) => (
@@ -40,7 +40,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="Refrigerator"
+        name="refrigerator_temp"
         options={{
           title: '냉장고',
           tabBarIcon: ({ color, size }) => (
@@ -49,7 +49,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="MealPlan"
+        name="meal-plan"
         options={{
           title: '식단',
           tabBarIcon: ({ color, size }) => (
@@ -58,7 +58,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="Profile"
+        name="profile_temp"
         options={{
           title: 'MY',
           tabBarIcon: ({ color, size }) => (
@@ -69,7 +69,7 @@ export default function TabLayout() {
       
       {/* Hide the login tab if it still exists in the file structure, we use the stack route for login now */}
       <Tabs.Screen
-        name="Login"
+        name="login_temp"
         options={{
           href: null,
         }}

@@ -8,7 +8,7 @@ export default function RecipePage() {
     <RecipeListScreen 
       onBack={() => router.back()}
       onRecipeClick={(id) => router.push(`/recipe/${id}` as any)}
-      onWriteClick={() => router.push('/recipe/Write')}
+      onWriteClick={() => router.push('/recipe')}
     />
   );
 }

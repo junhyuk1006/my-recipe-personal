@@ -6,11 +6,11 @@ export default function LoginPage() {
 
   return (
     <LoginScreen 
-      onSwitchToSignup={() => router.push('/Signup')}
+      onSwitchToSignup={() => router.push('/signup_temp')}
       onLogoClick={() => router.push('/(tabs)')}
       onLoginSuccess={() => router.push('/(tabs)')}
-      onFindIdClick={() => router.push('/FindId')}
-      onFindPasswordClick={() => router.push('/FindPassword')}
+      onFindIdClick={() => router.push('/find-id')}
+      onFindPasswordClick={() => router.push('/find-password')}
     />
   );
 }

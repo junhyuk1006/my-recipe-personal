@@ -11,7 +11,7 @@ export default function RecipeDetailPage() {
       recipeId={recipeId}
       onBack={() => router.back()}
       isLoggedIn={false} // Temp: Assume logged in or handle proper state
-      onLoginClick={() => router.push('/Login')}
+      onLoginClick={() => router.push('/login_temp')}
     />
   );
 }

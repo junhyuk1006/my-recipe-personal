@@ -7,7 +7,7 @@ export default function RefrigeratorPage() {
   return (
     <RefrigeratorScreen 
       onBack={() => router.back()}
-      onWriteClick={() => router.push('/recipe/Write')}
+      onWriteClick={() => router.push('/recipe')}
     />
   );
 }
