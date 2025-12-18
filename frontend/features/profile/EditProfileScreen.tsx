@@ -45,7 +45,7 @@ export function EditProfileScreen({ onBack }: EditProfileScreenProps) {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView style={styles.container} edges={["top","bottom"]}>
       {/* 헤더 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
