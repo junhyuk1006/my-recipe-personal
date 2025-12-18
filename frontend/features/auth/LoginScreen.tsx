@@ -43,7 +43,7 @@ export function LoginScreen({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.authWrapper}>
           {/* 로고 */}

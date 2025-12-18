@@ -18,12 +18,12 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ThemeProvider value={DefaultTheme}>
-      <Stack
-        screenOptions={{
-          headerShown: false, // Default to hidden, individual screens can enable/customize
-        }}>
-      </Stack>
-      <StatusBar style="dark" />
+        <Stack
+          screenOptions={{
+            headerShown: false, // Default to hidden, individual screens can enable/customize
+          }}
+        />
+        <StatusBar style="dark" translucent={false} />
       </ThemeProvider>
     </SafeAreaProvider>
   );

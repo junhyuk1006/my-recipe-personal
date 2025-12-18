@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, Image, Alert, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Clock, Users, Heart, MessageCircle, ChevronDown, Send, X } from 'lucide-react-native';
 import { Button } from '../../components/ui/Button';
 
@@ -20,7 +21,8 @@ interface Comment {
 }
 
 export function RecipeDetailScreen({ onBack, recipeId = 1, isLoggedIn = false, onLoginClick }: RecipeDetailScreenProps) {
-  const [liked, setLiked] = useState(false);
+    const insets = useSafeAreaInsets();
+    const [liked, setLiked] = useState(false);
   const [showAllComments, setShowAllComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [replyingTo, setReplyingTo] = useState<{ id: number; author: string } | null>(null);
@@ -210,21 +212,21 @@ export function RecipeDetailScreen({ onBack, recipeId = 1, isLoggedIn = false, o
 
   const displayedComments = showAllComments ? comments : comments.slice(0, 3);
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.keyboardAvoidingView}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-      >
-        <View style={styles.header}>
+    return (
+        <SafeAreaView style={styles.container} edges={["top"]}>
+            <KeyboardAvoidingView 
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={styles.keyboardAvoidingView}
+                keyboardVerticalOffset={Platform.OS === "ios" ? 0 : insets.bottom}
+            >
+                <View style={styles.header}>
             <TouchableOpacity onPress={onBack} style={styles.iconButton}>
                 <ArrowLeft size={24} color="#374151" />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>레시피 상세</Text>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom + 64, 64) }]}>
             {/* Header Info */}
             <View style={styles.infoSection}>
                 <View style={styles.titleRow}>
@@ -383,7 +385,7 @@ export function RecipeDetailScreen({ onBack, recipeId = 1, isLoggedIn = false, o
         </ScrollView>
 
         {/* Comment Input */}
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer, { paddingBottom: Math.max(insets.bottom, 8) }]}>
              {replyingTo && (
                 <View style={styles.replyingToBar}>
                     <Text style={styles.replyingToText}>
@@ -439,7 +441,7 @@ const styles = StyleSheet.create({
       color: '#000',
   },
   scrollContent: {
-      paddingBottom: 80, // Space for input
+      paddingBottom: 0,
   },
   infoSection: {
       padding: 16,

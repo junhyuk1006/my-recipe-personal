@@ -8,7 +8,7 @@ interface TermsScreenProps {
 
 export function TermsScreen({ onBack }: TermsScreenProps) {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       {/* 헤더 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>

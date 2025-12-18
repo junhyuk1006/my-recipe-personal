@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, SafeAreaView, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Search } from 'lucide-react-native';
 import { RecipeBanner } from './components/RecipeBanner';
 import { PopularRecipes } from './components/PopularRecipes';
@@ -26,8 +27,8 @@ export function HomeScreen({ onLogoClick, onRecipeClick, onRecipeListClick, onWr
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="dark-content" backgroundColor="white" />
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      {/* <StatusBar barStyle="dark-content" backgroundColor="white" /> */}
       {/* 헤더 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onLogoClick} style={styles.logoButton}>
