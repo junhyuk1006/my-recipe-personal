@@ -1,8 +1,8 @@
 spring:
   # 스프링 관련 공통 설정
-  mvc:
-    servlet:
-      path: /api # 모든 요청 URL에 /api 접두사 추가
+  #mvc:
+    #servlet:
+      #path: /api # 모든 요청 URL에 /api 접두사 추가
 
   application:
     name: my-recipe # 어플리케이션 이름
