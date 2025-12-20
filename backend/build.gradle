@@ -28,7 +28,8 @@ dependencies {
     // Spring Boot 기본 의존성
     implementation 'org.springframework.boot:spring-boot-starter-web' // 웹 서버 의존성 (내장 톰캣 포함)
     developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발 편의 기능 (개발 시 사용)
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5' // MyBatis-Spring Boot 연동 라이브러리
+    //implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5' // MyBatis-Spring Boot 연동 라이브러리
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security 라이브러리 (인증 및 인가 기능 구현)
 
     // MySQL 데이터베이스 드라이버
@@ -54,7 +55,7 @@ dependencies {
 
     // 테스트 의존성
     testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot 기본 테스트 라이브러리 (JUnit, Mockito 등)
-    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5' // MyBatis 테스트 지원 라이브러리
+    //testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5' // MyBatis 테스트 지원 라이브러리
     testImplementation 'org.springframework.security:spring-security-test' // Spring Security 테스트 지원 라이브러리
     testImplementation 'com.h2database:h2' // 테스트용 H2 데이터베이스
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // JUnit 플랫폼 런처

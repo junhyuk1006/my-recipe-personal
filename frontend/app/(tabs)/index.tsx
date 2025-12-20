@@ -13,7 +13,7 @@ export default function HomePage() {
 
   return (
     <HomeScreen 
-      onLogoClick={() => {}} // Already on home
+      onLogoClick={() => {alert("로고 클릭")}} // Already on home
       onRecipeClick={(id) => router.push(`/recipe/${id}` as any)}
       isLoggedIn={isLoggedIn}
       onLogout={handleLogout}

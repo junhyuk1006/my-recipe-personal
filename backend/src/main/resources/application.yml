@@ -7,7 +7,7 @@ spring:
   application:
     name: my-recipe # 어플리케이션 이름
   config:
-    import: "optional:file:./backend/application.secret.yml" # 외부 설정 파일 import
+    import: "optional:file:./application.secret.yml" # 외부 설정 파일 import
   messages:
     encoding: UTF-8 # 메시지 파일의 인코딩을 UTF-8로 설정
 
@@ -17,13 +17,15 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASS}
 
-# MyBatis 설정
-mybatis:
-  # classpath
-  mapper-locations: mapper/**/*.xml
-  configuration:
-    # DB-Java 필드명 매핑 (user_id (DB) -> userId (Java))
-    map-underscore-to-camel-case: true
+  # JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: update   # 개발용: update / create / validate 중 선택
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+    open-in-view: false  # API 서버면 보통 false 추천
 
 # 서버 설정
 server:
@@ -41,7 +43,8 @@ logging:
 #  file:
 #    name: ${LOG_PATH} # 로그 파일 경로 및 이름
   level:
-    com.myrecipe.mapper: trace # MyBatis SQL 쿼리 로깅
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace   # 바인딩 값까지 보고 싶을 때 (버전에 따라 키가 다를 수 있음)
     root: info
 #    org.springframework: info
 #    org.springframework.web: debug

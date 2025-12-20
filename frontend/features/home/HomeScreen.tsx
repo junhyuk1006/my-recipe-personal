@@ -37,6 +37,9 @@ export function HomeScreen({ onLogoClick, onRecipeClick, onRecipeListClick, onWr
             </View>
             <Text style={styles.brandTitle}>마이레시피</Text>
         </TouchableOpacity>
+        <TouchableOpacity onPress={onLoginClick}>
+          <Text style={styles.loginText}>로그인</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -72,11 +75,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#f3f4f6',
     backgroundColor: 'white',
+  },
+  loginText: {
+      fontSize: 16,
+      fontWeight: '500',
+      marginRight: 16,
   },
   logoButton: {
       flexDirection: 'row',

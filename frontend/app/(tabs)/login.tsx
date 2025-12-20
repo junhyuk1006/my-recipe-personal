@@ -3,6 +3,7 @@ import React from 'react';
 import { LoginScreen } from '../../features/auth/LoginScreen';
 import { SignupScreen } from '../../features/auth/SignupScreen';
 
+
 export default function LoginRoute() {
   const router = useRouter();
 
@@ -36,6 +37,7 @@ export default function LoginRoute() {
 
   return (
     <LoginScreen
+      onBack={() => router.back()}
       onSwitchToSignup={handleSwitchToSignup}
       onLoginSuccess={handleLoginSuccess}
       onFindIdClick={handleFindId}

@@ -5,8 +5,10 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Logo } from './components/Logo';
 import { SocialLoginButtons } from './components/SocialLoginButtons';
+import { ChevronLeft } from 'lucide-react-native';
 
 interface LoginScreenProps {
+  onBack: () => void;
   onSwitchToSignup?: () => void;
   onLogoClick?: () => void;
   onLoginSuccess?: () => void;
@@ -15,6 +17,7 @@ interface LoginScreenProps {
 }
 
 export function LoginScreen({ 
+  onBack,
   onSwitchToSignup, 
   onLogoClick, 
   onLoginSuccess, 
@@ -44,6 +47,11 @@ export function LoginScreen({
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
+      <View style={styles.header}>
+          <TouchableOpacity onPress={onBack} style={styles.backButton}>
+            <ChevronLeft size={24} color="#374151" />
+          </TouchableOpacity>
+      </View>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.authWrapper}>
           {/* 로고 */}
@@ -114,6 +122,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  header: {
+    paddingTop: 16,
+  },
+  backButton: {
+      padding: 4,
+      marginLeft: 12,
   },
   scrollContent: {
       flexGrow: 1,
