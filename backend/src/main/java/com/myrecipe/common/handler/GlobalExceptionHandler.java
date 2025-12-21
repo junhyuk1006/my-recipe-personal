@@ -1,11 +1,13 @@
 package com.myrecipe.common.handler;
 
 import com.myrecipe.common.dto.ErrorResponse;
+import com.myrecipe.common.exception.client.DuplicateEmailException;
 import com.myrecipe.common.exception.client.ResourceNotFoundException;
 import com.myrecipe.common.exception.client.UnauthorizedException;
 import com.myrecipe.common.exception.server.DataPersistenceException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -103,6 +105,28 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 "ERR_VALIDATION_FAILED",
                 detailedMessage,
+                request.getRequestURI(),
+                traceId
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+    /**
+     * DataIntegrityViolationException 이메일 UNIQUE 위반
+     */
+    @ExceptionHandler(DuplicateEmailException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateEmailException(
+            DuplicateEmailException ex,
+            HttpServletRequest request
+    ){
+        String traceId = generateTraceId();
+
+        log.warn("[{}] Duplicate: Message='{}', Path='{}",
+                traceId, ex.getMessage(), request.getRequestURI(), ex);
+
+        ErrorResponse errorResponse = ErrorResponse.of(
+                HttpStatus.BAD_REQUEST,
+                ex.getErrorCode(),
+                ex.getMessage(),
                 request.getRequestURI(),
                 traceId
         );

@@ -1,6 +1,7 @@
 package com.myrecipe.auth.controller;
 
 import com.myrecipe.auth.dto.SignupRequest;
+import com.myrecipe.auth.dto.SignupResponse;
 import com.myrecipe.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,8 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@RequestBody SignupRequest request){
-        authService.signup(request.getEmail(), request.getPassword(), request.getNickname());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest request){
+        SignupResponse response = authService.signup(request.getEmail(), request.getPassword(), request.getNickname());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

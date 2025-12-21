@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
 @Table(
         name = "users",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_users_email", columnNames = "email")
+                @UniqueConstraint(name = "uk_users_email", columnNames = "email"),
+                @UniqueConstraint(name = "uk_users_handle", columnNames = "handle")
         }
 )
 public class User {
@@ -30,6 +31,9 @@ public class User {
 
     @Column(nullable = false, length = 30)
     private String nickname;
+
+    @Column(nullable = false, length = 30)
+    private String handle;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
