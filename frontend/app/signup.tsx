@@ -8,6 +8,7 @@ export default function SignupPage() {
     <SignupScreen 
       onSwitchToLogin={() => router.back()}
       onLogoClick={() => router.push('/(tabs)')}
+      onProceedToProfile={() => router.push('/signup/profile')}
     />
   );
 }

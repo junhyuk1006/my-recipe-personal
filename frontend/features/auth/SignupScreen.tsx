@@ -7,25 +7,74 @@ import { Input } from '../../components/ui/Input';
 import { Logo } from './components/Logo';
 import { SocialLoginButtons } from './components/SocialLoginButtons';
 
+import { signup, getApiErrorMessage } from './api/auth.api';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
 interface SignupScreenProps {
   onSwitchToLogin: () => void;
   onLogoClick?: () => void;
+  onProceedToProfile?: (data: {
+     id: number; 
+     nickname: string;
+     handle: string 
+    }) => void;
 }
 
-export function SignupScreen({ onSwitchToLogin, onLogoClick }: SignupScreenProps) {
-  const [username, setUsername] = useState("");
+export function SignupScreen({ onSwitchToLogin, onLogoClick, onProceedToProfile }: SignupScreenProps) {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [email, setEmail] = useState("");
   const [nickname, setNickname] = useState("");
-  
-  const handleCheckDuplicate = () => {
-    Alert.alert("알림", "아이디 중복 확인 기능입니다.");
+  const [loading, setLoading] = useState(false);
+
+  const handleSignup = async () => {
+    const errorMessage = validateSignup();
+    if (errorMessage){
+      Alert.alert("회원가입 실패", errorMessage);
+      return;
+    }
+    try{
+      setLoading(true);
+
+      const data = await signup({
+        email: email.trim(),
+        password,
+        nickname: nickname.trim(),
+      });
+
+      onProceedToProfile?.({
+        id: data.id,
+        nickname: data.nickname,
+        handle: data.handle,
+      });
+    } catch (err) {
+      Alert.alert("회원가입 실패", getApiErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSignup = () => {
-      // Implement signup logic
-      Alert.alert("알림", "회원가입 요청");
+  const validateSignup = (): string | null => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim()) {
+      return "이메일을 입력해주세요.";
+    }
+    if (!emailRegex.test(email)) {
+      return "유효한 이메일 주소를 입력해주세요.";
+    }
+    if (!password) {
+      return "비밀번호를 입력해주세요.";
+    }
+    if (!passwordConfirm) {
+      return "비밀번호 확인을 입력해주세요.";
+    }
+    if (password !== passwordConfirm) {
+      return "비밀번호와 비밀번호 확인이 일치하지 않습니다.";
+    }
+    if (!nickname.trim()) {
+      return "닉네임을 입력해주세요.";
+    }
+    return null;
   };
 
   return (
@@ -55,28 +104,15 @@ export function SignupScreen({ onSwitchToLogin, onLogoClick }: SignupScreenProps
           {/* 회원가입 폼 */}
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-                {/* 아이디 + 중복확인 */}
-                <View>
-                    <Text style={styles.label}>아이디</Text>
-                    <View style={styles.row}>
-                        <View style={styles.flex1}>
-                            <Input
-                                placeholder="아이디를 입력하세요"
-                                value={username}
-                                onChangeText={setUsername}
-                                autoCapitalize="none"
-                                style={styles.inputWithButton}
-                            />
-                        </View>
-                        <Button 
-                            onPress={handleCheckDuplicate}
-                            size="default"
-                            style={styles.checkButton}
-                        >
-                            중복확인
-                        </Button>
-                    </View>
-                </View>
+                {/* 이메일 (Simplified to single input for mobile) */}
+                <Input
+                    label="이메일"
+                    placeholder="example@email.com"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                />
 
                 <Input
                     label="비밀번호"
@@ -94,16 +130,6 @@ export function SignupScreen({ onSwitchToLogin, onLogoClick }: SignupScreenProps
                     secureTextEntry
                 />
 
-                {/* 이메일 (Simplified to single input for mobile) */}
-                <Input
-                    label="이메일"
-                    placeholder="example@email.com"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                />
-                
                 <Input
                     label="닉네임"
                     placeholder="닉네임을 입력하세요"
@@ -118,7 +144,7 @@ export function SignupScreen({ onSwitchToLogin, onLogoClick }: SignupScreenProps
             </Button>
 
             {/* 소셜 가입 */}
-            <SocialLoginButtons type="signup" />
+            <SocialLoginButtons type="signup"/>
           </View>
         </View>
       </ScrollView>
