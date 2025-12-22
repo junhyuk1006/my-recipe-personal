@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Component
@@ -62,15 +63,15 @@ public class JwtTokenProvider {
         return TokenPair.builder()
                         .tokenType("Bearer")
                         .refreshToken(refreshToken)
-                        .accessExpiresInSeconds(Duration.between(now, accessExp)).getSeconds()
+                        .accessExpiresInSeconds(Duration.between(now, accessExp).getSeconds())
                         .build();
     }
 
     public Claims parseClaims(String token){
         return Jwts.parser()
-                        .verfyWith(key)
+                        .verifyWith(key)
                         .build()
-                        .parseSigndeClaims(token)
+                        .parseSignedClaims(token)
                         .getPayload();
     }
 
@@ -88,5 +89,9 @@ public class JwtTokenProvider {
     public boolean isRefreshToken(String token){
         Claims claims = parseClaims(token);
         return "refresh".equals(String.valueOf(claims.get("type")));
+    }
+
+    public LocalDateTime calculateRefreshTokenExpiry(){
+        return LocalDateTime.now().plusDays(refreshExpDays);
     }
 }

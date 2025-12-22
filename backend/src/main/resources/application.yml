@@ -50,7 +50,7 @@ logging:
 #    org.springframework.web: debug
 
 # JWT 설정
-service:
-  jwt:
-    secret-key: ${JWT_SECRET_KEY} # JWT 비밀 키
-    access-expiration: ${JWT_ACCESS_EXPIRATION} # JWT Access Token 만료 시간
+jwt:
+  secret-base64: ${JWT_SECRET_KEY} # JWT 비밀 키
+  access-exp-minutes: ${JWT_ACCESS_EXPIRATION} # JWT Access Token 만료 시간
+  refresh-exp-days: ${JWT_REFRESH_EXPIRATION} # JWT Refresh Token 만료 시간

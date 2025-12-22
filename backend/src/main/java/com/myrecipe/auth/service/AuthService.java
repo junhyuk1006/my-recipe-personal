@@ -1,6 +1,11 @@
 package com.myrecipe.auth.service;
 
 import com.myrecipe.auth.dto.SignupResponse;
+import com.myrecipe.auth.dto.SignupUserResponse;
+import com.myrecipe.auth.dto.TokenPair;
+import com.myrecipe.auth.jwt.JwtTokenProvider;
+import com.myrecipe.auth.token.domain.RefreshToken;
+import com.myrecipe.auth.token.repository.RefreshTokenRepository;
 import com.myrecipe.common.exception.client.DuplicateEmailException;
 import com.myrecipe.user.domain.User;
 import com.myrecipe.user.repository.UserRepository;
@@ -18,19 +23,32 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public SignupResponse signup(String email, String password, String nickname){
         String encodedPassword = passwordEncoder.encode(password);
         String handle = generateHandle();
 
         User user = User.builder().email(email).password(encodedPassword).nickname(nickname).handle(handle).build();
+        User savedUser;
         try {
-            User savedUser = userRepository.save(user);
-            TokenPair tokens = jwtTokenProvider.issueTokens(savedUser.getId(), saved.getRole());
-            return new SignupResponse(savedUser.getId(), savedUser.getNickname(), savedUser.getHandle(), tokens);
+            savedUser = userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
         }
+        TokenPair tokens = jwtTokenProvider.issueTokens(savedUser.getId(), savedUser.getRole().name());
+
+        refreshTokenRepository.deleteByUserId(savedUser.getId());
+        refreshTokenRepository.save(
+                RefreshToken.builder()
+                        .token(tokens.getRefreshToken())
+                        .userId(savedUser.getId())
+                        .expiresAt(jwtTokenProvider.calculateRefreshTokenExpiry())
+                        .build()
+        );
+
+        return new SignupResponse(new SignupUserResponse(savedUser.getId(), savedUser.getNickname(), savedUser.getHandle()), tokens);
     }
 
     private String generateHandle(){
