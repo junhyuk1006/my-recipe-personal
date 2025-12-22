@@ -26,7 +26,8 @@ public class AuthService {
         User user = User.builder().email(email).password(encodedPassword).nickname(nickname).handle(handle).build();
         try {
             User savedUser = userRepository.save(user);
-            return new SignupResponse(savedUser.getId(), savedUser.getNickname(), savedUser.getHandle());
+            TokenPair tokens = jwtTokenProvider.issueTokens(savedUser.getId(), saved.getRole());
+            return new SignupResponse(savedUser.getId(), savedUser.getNickname(), savedUser.getHandle(), tokens);
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
         }

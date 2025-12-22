@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class SignupResponse {
-    private Long id;
+    private Long userId;
     private String nickname;
     private String handle;
+    private TokenPair tokens;
 }
