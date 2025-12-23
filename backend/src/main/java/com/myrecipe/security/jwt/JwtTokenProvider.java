@@ -1,6 +1,5 @@
-package com.myrecipe.auth.jwt;
+package com.myrecipe.security.jwt;
 
-import com.myrecipe.auth.dto.TokenPair;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -72,26 +71,28 @@ public class JwtTokenProvider {
 
     public Claims parseClaims(String token){
         return Jwts.parser()
-                        .verifyWith(key)
+                        .verifyWith(key) // 서명 검증
                         .build()
-                        .parseSignedClaims(token)
+                        .parseSignedClaims(token) // 파싱 + 만료 검증
                         .getPayload();
     }
 
-    public Long getUserId(String token){
-        Claims claims = parseClaims(token);
-        return Long.valueOf(claims.getSubject());
+    public Long getUserId(Claims claims){
+        return claims.get("userId", Long.class);
     }
 
-    public String getRole(String token){
-        Claims claims = parseClaims(token);
-        Object role = claims.get("role");
-        return role == null ? null : String.valueOf(role);
+    public String getRole(Claims claims){
+        return claims.get("role", String.class);
     }
 
-    public boolean isRefreshToken(String token){
-        Claims claims = parseClaims(token);
-        return "refresh".equals(String.valueOf(claims.get("type")));
+    public boolean isRefreshToken(Claims claims){
+        String tokenType = claims.get("tokenType", String.class);
+        return "REFRESH".equals(tokenType);
+    }
+
+    public boolean isAccessToken(Claims claims){
+        String tokenType = claims.get("tokenType", String.class);
+        return "ACCESS".equals(tokenType);
     }
 
     public LocalDateTime calculateRefreshTokenExpiry(){

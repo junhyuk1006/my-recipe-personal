@@ -1,8 +1,11 @@
 package com.myrecipe.auth.controller;
 
+import com.myrecipe.auth.dto.LogoutRequest;
+import com.myrecipe.auth.dto.RefreshRequest;
 import com.myrecipe.auth.dto.SignupRequest;
 import com.myrecipe.auth.dto.SignupResponse;
 import com.myrecipe.auth.service.AuthService;
+import com.myrecipe.security.jwt.TokenPair;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +27,14 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public Response<TokenPair> refresh(@RequestBody RefreshRequest request){
+    public ResponseEntity<TokenPair> refresh(@RequestBody RefreshRequest request){
         TokenPair tokens = authService.refresh(request.getRefreshToken());
         return ResponseEntity.ok(tokens);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody LogoutRequest request){
+        authService.logout(request.getRefreshToken());
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,4 +1,4 @@
-package com.myrecipe.auth.token.domain;
+package com.myrecipe.auth.refresh.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,9 +24,6 @@ public class RefreshToken {
 
     @Column(nullable = false)
     private Long userId;
-
-    @Column(nullable = false)
-    private String role;
 
     @Column(nullable = false)
     private LocalDateTime expiresAt;

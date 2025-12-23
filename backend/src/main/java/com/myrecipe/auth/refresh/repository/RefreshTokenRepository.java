@@ -1,6 +1,6 @@
-package com.myrecipe.auth.token.repository;
+package com.myrecipe.auth.refresh.repository;
 
-import com.myrecipe.auth.token.domain.RefreshToken;
+import com.myrecipe.auth.refresh.domain.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

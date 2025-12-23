@@ -1,4 +1,4 @@
-package com.myrecipe.auth.dto;
+package com.myrecipe.security.jwt;
 
 import lombok.Builder;
 import lombok.Getter;
