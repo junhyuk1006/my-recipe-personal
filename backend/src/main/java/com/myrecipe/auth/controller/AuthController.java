@@ -22,4 +22,10 @@ public class AuthController {
         SignupResponse response = authService.signup(request.getEmail(), request.getPassword(), request.getNickname());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @PostMapping("/refresh")
+    public Response<TokenPair> refresh(@RequestBody RefreshRequest request){
+        TokenPair tokens = authService.refresh(request.getRefreshToken());
+        return ResponseEntity.ok(tokens);
+    }
 }

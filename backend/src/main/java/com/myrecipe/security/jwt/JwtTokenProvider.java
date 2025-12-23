@@ -46,6 +46,7 @@ public class JwtTokenProvider {
         String accessToken = Jwts.builder()
                                     .subject(String.valueOf(userId))
                                     .claim("role",role)
+                                    .claim("type","access")
                                     .issuedAt(Date.from(now))
                                     .expiration(Date.from(accessExp))
                                     .signWith(key)
@@ -54,6 +55,7 @@ public class JwtTokenProvider {
         Instant refreshExp = now.plus(Duration.ofDays(refreshExpDays));
         String refreshToken = Jwts.builder()
                                     .subject(String.valueOf(userId))
+                                    .claim("role",role)
                                     .claim("type", "refresh")
                                     .issuedAt(Date.from(now))
                                     .expiration(Date.from(refreshExp))
@@ -62,6 +64,7 @@ public class JwtTokenProvider {
 
         return TokenPair.builder()
                         .tokenType("Bearer")
+                        .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .accessExpiresInSeconds(Duration.between(now, accessExp).getSeconds())
                         .build();

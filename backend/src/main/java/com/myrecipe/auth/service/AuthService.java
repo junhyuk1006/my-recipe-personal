@@ -24,7 +24,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenService refreshTokenService;
 
     public SignupResponse signup(String email, String password, String nickname){
         String encodedPassword = passwordEncoder.encode(password);
@@ -37,9 +37,10 @@ public class AuthService {
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
         }
+        refreshTokenService.save(savedUser.getId(), savedUser.getRole().name());
+
         TokenPair tokens = jwtTokenProvider.issueTokens(savedUser.getId(), savedUser.getRole().name());
 
-        refreshTokenRepository.deleteByUserId(savedUser.getId());
         refreshTokenRepository.save(
                 RefreshToken.builder()
                         .token(tokens.getRefreshToken())
@@ -49,6 +50,33 @@ public class AuthService {
         );
 
         return new SignupResponse(new SignupUserResponse(savedUser.getId(), savedUser.getNickname(), savedUser.getHandle()), tokens);
+    }
+
+    private TokenPair refresh(String refreshToken){
+        
+        // 리프레시 토큰 타입 검증
+        if(!jwtTokenProvider.isRefreshToken(refreshToken)){
+            throw new InvalidTokenException("Refresh 토큰이 아닙니다.");
+        }
+
+        
+        // DB에 존재하고 만료가 안됐는지 검사
+        refreshTokenService.validateExistsAndNotExpired(refreshToken);
+        
+        // 토큰 정보 추출
+        Long userId = jwtTokenProvider.getUserId(refreshToken);
+        String role = jwtTokenProvider.getRole(refreshToken);
+        
+        // 새 토큰 발급
+        TokenPair newTokens = jwtTokenProvider.issueTokens(userId, role);
+    
+        // 기존 Refresh 토큰 폐기 + 신규 Refresh 토큰 저장
+        refreshTokenService.rotate(
+            refreshToken,
+            RefreshToken.builder().token(newTokens.getRefreshToken()).userId(userId).role(role).expiresAt(jwtTokenProvider.calculateRefreshTokenExpiry()).build()
+        );
+
+        return newTokens;
     }
 
     private String generateHandle(){

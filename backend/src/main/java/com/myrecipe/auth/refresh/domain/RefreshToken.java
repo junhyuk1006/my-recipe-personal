@@ -26,6 +26,9 @@ public class RefreshToken {
     private Long userId;
 
     @Column(nullable = false)
+    private String role;
+
+    @Column(nullable = false)
     private LocalDateTime expiresAt;
 
     public boolean isExpired(){
