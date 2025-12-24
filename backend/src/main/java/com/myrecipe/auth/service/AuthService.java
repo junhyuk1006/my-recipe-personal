@@ -48,13 +48,24 @@ public class AuthService {
         return new SignupResponse(new SignupUserResponse(savedUser.getId(), savedUser.getNickname(), savedUser.getHandle()), tokens);
     }
 
+    public LoginResponse login(String email, String password){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException());
+        if(!passwordEncoder.matches(password, user.getPassword())){
+            throw new UnauthorizedExcption("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
+        TokenPair tokens = jwtTokenProvider.issueTokens(user.getId(), user.getRole());
+        refreshTokenService.save(tokens.getRefreshToken(), user.getId(), jwtTokenProvider.calculateRefreshTokenExpiry());
+        return new LoginResponse(new LoginUserResponse(user.getId(), user.getEmail(), user.getNickname(), user.getHandle()), tokens);
+    }
+
+    @Transaction
     public TokenPair refresh(String refreshToken){
         // 파싱
         Claims claims = jwtTokenProvider.parseClaims(refreshToken);
 
         // 리프레시 토큰 타입 검증
         if(!jwtTokenProvider.isRefreshToken(claims)){
-            throw new UnauthorizedException("Refresh 토큰이 아닙니다.");
+            throw new UnauthorizedException("Refresh Token이 아닙니다.");
         }
         
         // DB에 존재하고 만료가 안됐는지 검사

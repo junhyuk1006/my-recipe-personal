@@ -78,7 +78,7 @@ public class JwtTokenProvider {
     }
 
     public Long getUserId(Claims claims){
-        return claims.get("userId", Long.class);
+        return Long.parseLong(claims.getSubject());
     }
 
     public String getRole(Claims claims){
@@ -86,13 +86,13 @@ public class JwtTokenProvider {
     }
 
     public boolean isRefreshToken(Claims claims){
-        String tokenType = claims.get("tokenType", String.class);
-        return "REFRESH".equals(tokenType);
+        String tokenType = claims.get("type", String.class);
+        return "refresh".equals(tokenType);
     }
 
     public boolean isAccessToken(Claims claims){
-        String tokenType = claims.get("tokenType", String.class);
-        return "ACCESS".equals(tokenType);
+        String tokenType = claims.get("type", String.class);
+        return "access".equals(tokenType);
     }
 
     public LocalDateTime calculateRefreshTokenExpiry(){

@@ -26,6 +26,12 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest requset){
+        LoginResponse response = authService.login(request.getEmail(), request.getPassward());
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<TokenPair> refresh(@RequestBody RefreshRequest request){
         TokenPair tokens = authService.refresh(request.getRefreshToken());
