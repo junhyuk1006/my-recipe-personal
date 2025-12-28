@@ -1,9 +1,6 @@
 package com.myrecipe.auth.controller;
 
-import com.myrecipe.auth.dto.LogoutRequest;
-import com.myrecipe.auth.dto.RefreshRequest;
-import com.myrecipe.auth.dto.SignupRequest;
-import com.myrecipe.auth.dto.SignupResponse;
+import com.myrecipe.auth.dto.*;
 import com.myrecipe.auth.service.AuthService;
 import com.myrecipe.security.jwt.TokenPair;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +24,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest requset){
-        LoginResponse response = authService.login(request.getEmail(), request.getPassward());
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request){
+        LoginResponse response = authService.login(request.getEmail(), request.getPassword());
         return ResponseEntity.ok(response);
     }
 

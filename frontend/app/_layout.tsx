@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 // import * as NavigationBar from 'expo-navigation-bar'; // Not needed for standard edge-to-edge with SafeArea
 import { useEffect } from 'react';
+import { AuthProvider } from '@/auth/AuthProvider';
 
 // ...
 
@@ -17,14 +18,16 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider value={DefaultTheme}>
-        <Stack
-          screenOptions={{
-            headerShown: false, // Default to hidden, individual screens can enable/customize
-          }}
-        />
-        <StatusBar style="dark" translucent={false} />
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider value={DefaultTheme}>
+          <Stack
+            screenOptions={{
+              headerShown: false, // Default to hidden, individual screens can enable/customize
+            }}
+          />
+          <StatusBar style="dark" translucent={false} />
+        </ThemeProvider>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }

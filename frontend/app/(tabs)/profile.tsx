@@ -1,9 +1,20 @@
 import { ProfileScreen } from '../../features/profile/ProfileScreen';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/auth/AuthProvider';
+import { useEffect } from 'react';
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { isAuthReady, isLoggedIn} = useAuth();
 
+  useEffect(() => {
+    if (!isAuthReady) return;
+    if (!isLoggedIn) router.replace("/login");
+  }, [isAuthReady, isLoggedIn, router]);
+
+  if(!isAuthReady) return null;
+  if(!isLoggedIn) return null;
+  
   return (
     <ProfileScreen 
       onBack={() => router.back()}

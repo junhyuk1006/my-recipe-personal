@@ -1,5 +1,7 @@
 package com.myrecipe.auth.service;
 
+import com.myrecipe.auth.dto.LoginResponse;
+import com.myrecipe.auth.dto.LoginUserResponse;
 import com.myrecipe.auth.dto.SignupResponse;
 import com.myrecipe.auth.dto.SignupUserResponse;
 import com.myrecipe.auth.refresh.domain.RefreshToken;
@@ -11,6 +13,7 @@ import com.myrecipe.security.jwt.TokenPair;
 import com.myrecipe.user.domain.User;
 import com.myrecipe.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,14 +54,14 @@ public class AuthService {
     public LoginResponse login(String email, String password){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException());
         if(!passwordEncoder.matches(password, user.getPassword())){
-            throw new UnauthorizedExcption("아이디 또는 비밀번호가 일치하지 않습니다.");
+            throw new UnauthorizedException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
-        TokenPair tokens = jwtTokenProvider.issueTokens(user.getId(), user.getRole());
+        TokenPair tokens = jwtTokenProvider.issueTokens(user.getId(), user.getRole().name());
         refreshTokenService.save(tokens.getRefreshToken(), user.getId(), jwtTokenProvider.calculateRefreshTokenExpiry());
         return new LoginResponse(new LoginUserResponse(user.getId(), user.getEmail(), user.getNickname(), user.getHandle()), tokens);
     }
 
-    @Transaction
+    @Transactional
     public TokenPair refresh(String refreshToken){
         // 파싱
         Claims claims = jwtTokenProvider.parseClaims(refreshToken);

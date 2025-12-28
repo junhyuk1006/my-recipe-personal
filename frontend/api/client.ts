@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {tokenStorage} from "../lib/tokenStorage";
+import { refresh } from '../features/auth/api/auth.api';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 let isRefreshing = false;
@@ -21,6 +22,14 @@ export const api = axios.create({
         'Content-Type': 'application/json',
     },
 });
+
+export const plain = axios.create({
+  baseURL: BASE_URL,
+  timeout: 10_000,
+  headers: {
+      'Content-Type': 'application/json',
+  },
+})
 
 api.interceptors.request.use(async (config) => {
   const token = await tokenStorage.getAccess();
@@ -53,7 +62,7 @@ api.interceptors.response.use(
       if(!rToken) throw err;
 
       const data = await refresh(rToken);
-      await tokenStorage.setTokens(data.accssToken, data.refreshToken);
+      await tokenStorage.setTokens(data.accessToken, data.refreshToken);
 
       notify(data.accessToken);
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { api } from "../../../api/client";
+import { api, plain } from "../../../api/client";
 
 export type SignupRequest = {
   email: string;
@@ -19,9 +19,19 @@ export type ApiErrorResponse = {
     code?: number;
 };
 
+export type RefreshResponse = {
+    accessToken: string;
+    refreshToken: string;
+}
+
 export async function signup(request: SignupRequest): Promise<SignupResponse> {
     const res = await api.post<SignupResponse>('/api/auth/signup', request);
     return res.data;
+}
+
+export async function refresh(refreshToken: string) : Promise<RefreshResponse> {
+  const res = await plain.post<RefreshResponse>('/api/auth/refresh', { refreshToken });
+  return res.data;
 }
 
 // 화면에서 에러 메시지 뽑아 쓰기 편하게
