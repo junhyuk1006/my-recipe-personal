@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, Dimensions } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
 import { Button } from '../../components/ui/Button';
+import { useLocalSearchParams } from 'expo-router';
 
 interface SignupProfileScreenProps {
   onBack?: () => void;
@@ -12,10 +13,12 @@ interface SignupProfileScreenProps {
 
 export function SignupProfileScreen({ onBack, onContinue, onSkip }: SignupProfileScreenProps) {
   const [photoUri, setPhotoUri] = useState<string | null>(null);
-
+  const { id, nickname, handle } = useLocalSearchParams<{
+    id?: string;
+    nickname?: string;
+    handle?: string;
+  }>();
   // Fixed placeholders (server will provide real values later)
-  const nickname = '닉네임';
-  const handle = 'user_XXXX';
 
   // Avatar size ~ 2/3 of screen width
   const avatarSize = Math.round(Dimensions.get('window').width * 0.66);
@@ -32,6 +35,7 @@ export function SignupProfileScreen({ onBack, onContinue, onSkip }: SignupProfil
   }
 
   function handleContinue() {
+    if (!nickname || !handle) return;
     onContinue({ photoUri, nickname, handle });
   }
 

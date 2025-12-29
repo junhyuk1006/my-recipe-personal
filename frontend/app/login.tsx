@@ -6,6 +6,7 @@ export default function LoginPage() {
 
   return (
     <LoginScreen 
+      onBack={() => router.back}
       onSwitchToSignup={() => router.push('/signup')}
       onLogoClick={() => router.push('/(tabs)')}
       onLoginSuccess={() => router.push('/(tabs)')}

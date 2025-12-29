@@ -6,6 +6,8 @@ import { Input } from '../../components/ui/Input';
 import { Logo } from './components/Logo';
 import { SocialLoginButtons } from './components/SocialLoginButtons';
 import { ChevronLeft } from 'lucide-react-native';
+import { useAuth } from '@/auth/AuthProvider';
+import { getApiErrorMessage, login } from './api/auth.api';
 
 interface LoginScreenProps {
   onBack: () => void;
@@ -24,25 +26,48 @@ export function LoginScreen({
   onFindIdClick, 
   onFindPasswordClick 
 }: LoginScreenProps) {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
 
-  const handleLogin = () => {
-    // 아이디와 비밀번호가 모두 "a"인 경우 로그인 성공
-    if (username === "a" && password === "a") {
+  const handleLogin = async () => {
+    const errorMessage = validateLogin();
+        if (errorMessage){
+          Alert.alert("회원가입 실패", errorMessage);
+          return;
+        }
+    try{
       setLoading(true);
-      // Simulate network request
-      setTimeout(() => {
-          setLoading(false);
-          onLoginSuccess?.();
-      }, 500);
-    } else {
-      Alert.alert(
-        "로그인 실패", 
-        "아이디 또는 비밀번호가 올바르지 않습니다.\n\n테스트용: 아이디 'a', 비밀번호 'a'를 입력하세요."
-      );
+
+      const data = await login({
+        email: email.trim(),
+        password,
+      });
+
+      await signIn(data.tokens.accessToken, data.tokens.refreshToken);
+
+      onLoginSuccess?.();
+
+    } catch(err){
+      Alert.alert("로그인 실패", getApiErrorMessage(err));
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const validateLogin = (): string | null => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim()) {
+      return "이메일을 입력해주세요.";
+    }
+    if (!emailRegex.test(email)) {
+      return "유효한 이메일 주소를 입력해주세요.";
+    }
+    if (!password) {
+      return "비밀번호를 입력해주세요.";
+    }
+    return null;
   };
 
   return (
@@ -67,10 +92,10 @@ export function LoginScreen({
           <View style={styles.form}>
               <View style={styles.inputGroup}>
                 <Input
-                    label="아이디"
-                    placeholder="아이디를 입력하세요"
-                    value={username}
-                    onChangeText={setUsername}
+                    label="이메일"
+                    placeholder="example@email.com"
+                    value={email}
+                    onChangeText={setEmail}
                     autoCapitalize="none"
                 />
                 <Input

@@ -8,7 +8,14 @@ export default function SignupPage() {
     <SignupScreen 
       onSwitchToLogin={() => router.back()}
       onLogoClick={() => router.push('/(tabs)')}
-      onProceedToProfile={() => router.push('/signup/profile')}
+      onProceedToProfile={(user) => router.push({
+        pathname: '/signup/profile',
+        params: {
+          id: String(user.id),
+          nickname: user.nickname,
+          handle: user.handle,
+        }
+      })}
     />
   );
 }

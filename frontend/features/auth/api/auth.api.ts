@@ -8,10 +8,34 @@ export type SignupRequest = {
 };
 
 export type SignupResponse = {
-  id: number;
-  nickname: string;
-  handle: string;
+  user:{
+    id: number;
+    nickname: string;
+    handle: string;
+  };
+  tokens:{
+    accessToken: string;
+    refreshToken: string;
+  }
 };
+
+export type LoginRequest = {
+  email: string;
+  password: string;
+}
+
+export type LoginResponse = {
+  user:{
+    id: number;
+    email: string;
+    nickname: string;
+    handle: string;
+  };
+  tokens:{
+    accessToken: string;
+    refreshToken: string;
+  }
+}
 
 export type ApiErrorResponse = {
     message: string;
@@ -25,8 +49,13 @@ export type RefreshResponse = {
 }
 
 export async function signup(request: SignupRequest): Promise<SignupResponse> {
-    const res = await api.post<SignupResponse>('/api/auth/signup', request);
-    return res.data;
+  const res = await api.post<SignupResponse>('/api/auth/signup', request);
+  return res.data;
+}
+
+export async function login(request: LoginRequest): Promise<LoginResponse> {
+  const res = await plain.post<LoginResponse>("/api/auth/login", request);
+  return res.data;
 }
 
 export async function refresh(refreshToken: string) : Promise<RefreshResponse> {

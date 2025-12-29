@@ -8,6 +8,7 @@ import { Logo } from './components/Logo';
 import { SocialLoginButtons } from './components/SocialLoginButtons';
 
 import { signup, getApiErrorMessage } from './api/auth.api';
+import { useAuth } from '@/auth/AuthProvider';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 interface SignupScreenProps {
@@ -26,6 +27,7 @@ export function SignupScreen({ onSwitchToLogin, onLogoClick, onProceedToProfile 
   const [email, setEmail] = useState("");
   const [nickname, setNickname] = useState("");
   const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
 
   const handleSignup = async () => {
     const errorMessage = validateSignup();
@@ -42,11 +44,9 @@ export function SignupScreen({ onSwitchToLogin, onLogoClick, onProceedToProfile 
         nickname: nickname.trim(),
       });
 
-      onProceedToProfile?.({
-        id: data.id,
-        nickname: data.nickname,
-        handle: data.handle,
-      });
+      await signIn(data.tokens.accessToken, data.tokens.refreshToken);
+
+      onProceedToProfile?.(data.user);
     } catch (err) {
       Alert.alert("회원가입 실패", getApiErrorMessage(err));
     } finally {
