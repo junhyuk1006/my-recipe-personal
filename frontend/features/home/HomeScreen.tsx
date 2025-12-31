@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Search } from 'lucide-react-native';
 import { RecipeBanner } from './components/RecipeBanner';
 import { PopularRecipes } from './components/PopularRecipes';
+import { useAuth } from '@/auth/AuthProvider';
 
 interface HomeScreenProps {
   onLogoClick?: () => void;
@@ -11,19 +12,24 @@ interface HomeScreenProps {
   onRecipeListClick?: () => void;
   onWriteClick?: () => void;
   isLoggedIn?: boolean; 
-  onLogout?: () => void;
+  onLogoutClick?: () => void;
   onLoginClick?: () => void;
   onRefrigeratorClick?: () => void;
   onMealPlanClick?: () => void;
   onProfileClick?: () => void;
 }
 
-export function HomeScreen({ onLogoClick, onRecipeClick, onRecipeListClick, onWriteClick, isLoggedIn, onLogout, onLoginClick }: HomeScreenProps) {
+export function HomeScreen({ onLogoClick, onRecipeClick, onRecipeListClick, onWriteClick, isLoggedIn, onLogoutClick, onLoginClick }: HomeScreenProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = () => {
     console.log("검색어:", searchQuery);
     // 검색 로직 구현
+  };
+
+  const handleLogout = () => {
+    onLogoutClick;
+    // In a real app, clear tokens etc.
   };
 
   return (
@@ -38,7 +44,7 @@ export function HomeScreen({ onLogoClick, onRecipeClick, onRecipeListClick, onWr
             <Text style={styles.brandTitle}>마이레시피</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={onLoginClick}>
-          <Text style={styles.loginText}>로그인</Text>
+          <Text style={styles.loginText}>{isLoggedIn ? '로그아웃' : '로그인'}</Text>
         </TouchableOpacity>
       </View>
 

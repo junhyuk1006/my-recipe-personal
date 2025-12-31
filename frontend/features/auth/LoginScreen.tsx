@@ -33,10 +33,11 @@ export function LoginScreen({
 
   const handleLogin = async () => {
     const errorMessage = validateLogin();
-        if (errorMessage){
-          Alert.alert("회원가입 실패", errorMessage);
-          return;
-        }
+    if (errorMessage){
+      Alert.alert("회원가입 실패", errorMessage);
+      return;
+    }
+
     try{
       setLoading(true);
 
