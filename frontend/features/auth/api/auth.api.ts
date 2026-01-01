@@ -54,7 +54,7 @@ export async function signup(request: SignupRequest): Promise<SignupResponse> {
 }
 
 export async function login(request: LoginRequest): Promise<LoginResponse> {
-  const res = await plain.post<LoginResponse>("/api/auth/login", request);
+  const res = await plain.post<LoginResponse>('/api/auth/login', request);
   return res.data;
 }
 

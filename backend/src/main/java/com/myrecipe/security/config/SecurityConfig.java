@@ -25,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private JwtTokenProvider jwtTokenProvider;
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     public SecurityConfig(JwtTokenProvider jwtTokenProvider){
         this.jwtTokenProvider = jwtTokenProvider;
@@ -44,13 +45,13 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 // 인증 실패 401 내려주기
-                .exceptionHandling(eh -> eh.authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
+                .exceptionHandling(eh -> eh.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 // ---- cors 설정 적용 ---- //
                 // .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // ---- 권한별 요청의 응답 제어 (인가) ---- //
                 .authorizeHttpRequests(auth -> auth
                         // swagger 경로
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/auth/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "api/auth/**").permitAll()
                         // 추가적인 경로 (로그인, 마이페이지 등)
                         // .requestMatchers("/member").authenticated()
                         // 명시된 경로 이외에는 접근 제한 필요 (임시로 제한 해제)

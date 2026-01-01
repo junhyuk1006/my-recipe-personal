@@ -8,5 +8,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LoginResponse {
     LoginUserResponse user;
-    TokenPair token;
+    TokenPair tokens;
 }

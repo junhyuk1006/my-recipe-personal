@@ -1,11 +1,9 @@
 package com.myrecipe.refrigerator.domain;
 
-import java.time.LocalDateTime;
-
-import javax.annotation.processing.Generated;
-
+import com.myrecipe.user.domain.User;
 import jakarta.persistence.*;
-import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "refrigerator_item")
@@ -14,7 +12,7 @@ public class RefrigeratorItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = fetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
@@ -28,7 +26,7 @@ public class RefrigeratorItem {
     private String unit;
 
     @Column(name = "expiration_date")
-    private LocalDateTime expriationDate;
+    private LocalDateTime expirationDate;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
