@@ -5,21 +5,22 @@ import com.myrecipe.user.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
 public class ItemRequest {
     private Long id;
-    private String ingredientName;
+    private String name;
     private Integer quantity;
     private String unit;
-    private LocalDateTime expirationDate;
+    private LocalDate expirationDate;
 
     public RefrigeratorItem toEntity(User user){
         return RefrigeratorItem.builder()
                 .user(user)
-                .ingredientName(ingredientName)
+                .name(name)
                 .quantity(quantity)
                 .unit(unit)
                 .expirationDate(expirationDate)

@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, TextInput, Modal, Alert, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, X, ChevronLeft, Camera, Search, Clock, Heart, MessageCircle, Star, RefreshCw, Trash2 } from 'lucide-react-native';
 import { Button } from '../../components/ui/Button'; // Assuming Button is available
 import { Input } from '../../components/ui/Input'; // Assuming Input is available
 
+import { findItem, createItem, getApiErrorMessage, deleteItem } from './api/refrigerator.api';
+
 interface Ingredient {
   id: number;
   name: string;
-  amount: string;
-  expiryDate: string;
+  unit: string;
+  expirationDate: string;
+}
+
+interface NewIngredient {
+  name: string;
+  unit: string;
+  expirationDate: string;
 }
 
 interface RefrigeratorScreenProps {
@@ -21,24 +29,22 @@ export function RefrigeratorScreen({ onBack }: RefrigeratorScreenProps) {
   const [currentTab, setCurrentTab] = useState<"all" | "soon" | "expired">("all");
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [ingredients, setIngredients] = useState<Ingredient[]>([
-    { id: 1, name: "우유", amount: "1L", expiryDate: "2025-12-10" },
-    { id: 2, name: "계란", amount: "10개", expiryDate: "2025-12-15" },
-    { id: 3, name: "당근", amount: "500g", expiryDate: "2025-12-05" },
-    { id: 4, name: "양파", amount: "3개", expiryDate: "2025-11-30" },
-    { id: 5, name: "감자", amount: "1kg", expiryDate: "2025-12-20" },
-    { id: 6, name: "브로콜리", amount: "300g", expiryDate: "2025-12-08" },
-    { id: 7, name: "치즈", amount: "200g", expiryDate: "2025-12-25" },
-    { id: 8, name: "토마토", amount: "5개", expiryDate: "2025-12-06" },
-    { id: 9, name: "상추", amount: "1봉", expiryDate: "2025-12-04" },
-    { id: 10, name: "사과", amount: "6개", expiryDate: "2025-12-18" },
-  ]);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
   const [newIngredient, setNewIngredient] = useState({
     name: "",
-    amount: "",
-    expiryDate: "",
+    unit: "",
+    expirationDate: "",
   });
+
+  useEffect(() => {
+    handleFetchData();
+  }, []);
+
+  const handleFetchData = async () => {
+    const data = await findItem();
+    setIngredients(data);
+  };
 
   // 오늘 날짜
   const today = new Date();
@@ -58,7 +64,7 @@ export function RefrigeratorScreen({ onBack }: RefrigeratorScreenProps) {
     }
 
     return filtered.filter((item) => {
-      const expiryDate = new Date(item.expiryDate);
+      const expiryDate = new Date(item.expirationDate);
       expiryDate.setHours(0, 0, 0, 0);
 
       if (currentTab === "expired") {
@@ -77,19 +83,19 @@ export function RefrigeratorScreen({ onBack }: RefrigeratorScreenProps) {
   // 탭별 개수 계산
   const getCounts = () => {
     const all = ingredients.filter((item) => {
-      const expiryDate = new Date(item.expiryDate);
+      const expiryDate = new Date(item.expirationDate);
       expiryDate.setHours(0, 0, 0, 0);
       return expiryDate >= today;
     }).length;
 
     const soon = ingredients.filter((item) => {
-      const expiryDate = new Date(item.expiryDate);
+      const expiryDate = new Date(item.expirationDate);
       expiryDate.setHours(0, 0, 0, 0);
       return expiryDate >= today && expiryDate <= soonDate;
     }).length;
 
     const expired = ingredients.filter((item) => {
-      const expiryDate = new Date(item.expiryDate);
+      const expiryDate = new Date(item.expirationDate);
       expiryDate.setHours(0, 0, 0, 0);
       return expiryDate < today;
     }).length;
@@ -100,24 +106,21 @@ export function RefrigeratorScreen({ onBack }: RefrigeratorScreenProps) {
   const counts = getCounts();
   const filteredIngredients = getFilteredIngredients();
 
-  const handleAddIngredient = () => {
-    if (!newIngredient.name || !newIngredient.amount || !newIngredient.expiryDate) {
+  // 등록
+  const handleAddIngredient = async () => {
+    if (!newIngredient.name || !newIngredient.unit || !newIngredient.expirationDate) {
       Alert.alert("알림", "모든 항목을 입력해주세요.");
       return;
     }
 
-    const ingredient: Ingredient = {
-      id: Date.now(),
-      name: newIngredient.name,
-      amount: newIngredient.amount,
-      expiryDate: newIngredient.expiryDate,
-    };
+    const ingredient: Ingredient = await createItem(newIngredient);
 
     setIngredients([...ingredients, ingredient]);
-    setNewIngredient({ name: "", amount: "", expiryDate: "" });
+    setNewIngredient({name: "", unit: "", expirationDate: "" });
     setShowAddModal(false);
   };
 
+  // 삭제
   const handleDeleteIngredient = (id: number) => {
     Alert.alert(
       "삭제 확인",
@@ -127,7 +130,10 @@ export function RefrigeratorScreen({ onBack }: RefrigeratorScreenProps) {
         { 
           text: "삭제", 
           style: "destructive",
-          onPress: () => setIngredients(ingredients.filter((item) => item.id !== id))
+          onPress: () => {
+              deleteItem(id);
+              setIngredients(ingredients.filter((item) => item.id !== id));
+          }
         }
       ]
     );
@@ -287,9 +293,9 @@ export function RefrigeratorScreen({ onBack }: RefrigeratorScreenProps) {
                     <View key={item.id} style={styles.ingredientItem}>
                         <View style={styles.ingredientInfo}>
                             <Text style={styles.ingredientName}>{item.name}</Text>
-                            <Text style={styles.ingredientAmount}>{item.amount}</Text>
-                            <Text style={[styles.ingredientDate, { color: getExpiryColor(item.expiryDate) }]}>
-                                {formatDate(item.expiryDate)}
+                            <Text style={styles.ingredientAmount}>{item.unit}</Text>
+                            <Text style={[styles.ingredientDate, { color: getExpiryColor(item.expirationDate) }]}>
+                                {formatDate(item.expirationDate)}
                             </Text>
                         </View>
                         <TouchableOpacity onPress={() => handleDeleteIngredient(item.id)} style={styles.deleteButton}>
@@ -369,14 +375,14 @@ export function RefrigeratorScreen({ onBack }: RefrigeratorScreenProps) {
                     <Input
                         label="수량/무게"
                         placeholder="예: 500g, 10개"
-                        value={newIngredient.amount}
-                        onChangeText={(text) => setNewIngredient(prev => ({ ...prev, amount: text }))}
+                        value={newIngredient.unit}
+                        onChangeText={(text) => setNewIngredient(prev => ({ ...prev, unit: text }))}
                     />
                     <Input
                         label="유통기한"
                         placeholder="YYYY-MM-DD" // Improved placeholder for React Native Date picker alternative
-                        value={newIngredient.expiryDate}
-                        onChangeText={(text) => setNewIngredient(prev => ({ ...prev, expiryDate: text }))}
+                        value={newIngredient.expirationDate}
+                        onChangeText={(text) => setNewIngredient(prev => ({ ...prev, expirationDate: text }))}
                     />
                     
                     <View style={styles.modalButtons}>

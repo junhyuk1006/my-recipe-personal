@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -25,8 +26,8 @@ public class RefrigeratorItem {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(name = "ingredient_name", nullable = false)
-    private String ingredientName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -35,7 +36,7 @@ public class RefrigeratorItem {
     private String unit;
 
     @Column(name = "expiration_date")
-    private LocalDateTime expirationDate;
+    private LocalDate expirationDate;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -56,7 +57,7 @@ public class RefrigeratorItem {
     }
 
     public void update(ItemRequest request){
-        this.ingredientName = request.getIngredientName();
+        this.name = request.getName();
         this.quantity = request.getQuantity();
         this.unit = request.getUnit();
         this.expirationDate = request.getExpirationDate();

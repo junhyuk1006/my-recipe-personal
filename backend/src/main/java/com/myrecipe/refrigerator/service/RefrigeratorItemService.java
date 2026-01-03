@@ -18,7 +18,7 @@ public class RefrigeratorItemService {
     private final RefrigeratorItemRepository refrigeratorItemRepository;
     private final UserRepository userRepository;
 
-    public List<ItemResponse> findItems(Long userId){
+    public List<ItemResponse> findItem(Long userId){
         return refrigeratorItemRepository.findByUserId(userId).stream().map(ItemResponse::from).toList();
     }
 

@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { isAuthReady, isLoggedIn} = useAuth();
+  const { isAuthReady, isLoggedIn } = useAuth();
 
   useEffect(() => {
     if (!isAuthReady) return;

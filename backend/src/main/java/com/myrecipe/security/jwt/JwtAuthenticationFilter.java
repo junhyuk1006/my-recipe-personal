@@ -57,13 +57,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.clearContext();
             throw e;
         } catch (Exception e){
+            logger.warn("JWT 인증 실패", e);
             SecurityContextHolder.clearContext();
             throw new UnauthorizedException("유효하지 않은 토큰입니다.");
         }
     }
 
-    private String resolveBearerToken(HttpServletRequest resquest){
-        String header = resquest.getHeader("Authorization");
+    private String resolveBearerToken(HttpServletRequest request){
+        String header = request.getHeader("Authorization");
         if(!StringUtils.hasText(header)) return null;
         if(header.startsWith("Bearer")) return header.substring(7);
         return null;

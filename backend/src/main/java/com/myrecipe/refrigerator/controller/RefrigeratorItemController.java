@@ -13,13 +13,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/refrigeratorItem")
+@RequestMapping("/api/refrigerator")
 public class RefrigeratorItemController {
     private final RefrigeratorItemService refrigeratorItemService;
 
-    @GetMapping("/items")
-    public List<ItemResponse> findItems(@AuthenticationPrincipal Long userId){
-        return refrigeratorItemService.findItems(userId);
+    @GetMapping("/item")
+    public List<ItemResponse> findItem(@AuthenticationPrincipal Long userId){
+        return refrigeratorItemService.findItem(userId);
     }
 
     @PostMapping("/item")

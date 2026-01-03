@@ -27,11 +27,6 @@ export function HomeScreen({ onLogoClick, onRecipeClick, onRecipeListClick, onWr
     // 검색 로직 구현
   };
 
-  const handleLogout = () => {
-    onLogoutClick;
-    // In a real app, clear tokens etc.
-  };
-
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       {/* <StatusBar barStyle="dark-content" backgroundColor="white" /> */}
@@ -43,7 +38,7 @@ export function HomeScreen({ onLogoClick, onRecipeClick, onRecipeListClick, onWr
             </View>
             <Text style={styles.brandTitle}>마이레시피</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={onLoginClick}>
+        <TouchableOpacity onPress={isLoggedIn ? onLogoutClick : onLoginClick}>
           <Text style={styles.loginText}>{isLoggedIn ? '로그아웃' : '로그인'}</Text>
         </TouchableOpacity>
       </View>
