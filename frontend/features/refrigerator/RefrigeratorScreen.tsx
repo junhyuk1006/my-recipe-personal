@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, TextInput, Modal, Alert, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, TextInput, Modal, Alert, FlatList, Platform } from 'react-native';
+// @ts-ignore - optional dependency might not have types in this project
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, X, ChevronLeft, Camera, Search, Clock, Heart, MessageCircle, Star, RefreshCw, Trash2 } from 'lucide-react-native';
 import { Button } from '../../components/ui/Button'; // Assuming Button is available
@@ -36,6 +38,39 @@ export function RefrigeratorScreen({ onBack }: RefrigeratorScreenProps) {
     unit: "",
     expirationDate: "",
   });
+
+  // Date picker state
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  // Helpers to handle LocalDate (YYYY-MM-DD)
+  const parseLocalDate = (s: string) => {
+    if (!s) return null;
+    const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return null;
+    const y = Number(m[1]), mo = Number(m[2]), d = Number(m[3]);
+    const dt = new Date(y, mo - 1, d);
+    dt.setHours(0,0,0,0);
+    // verify round-trip
+    if (dt.getFullYear() !== y || dt.getMonth() + 1 !== mo || dt.getDate() !== d) return null;
+    return dt;
+  };
+
+  const toLocalDateString = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const isValidLocalDateString = (s: string) => {
+    if (!s) return false;
+    const parsed = parseLocalDate(s);
+    return parsed !== null && toLocalDateString(parsed) === s;
+  };
+
+  const openDatePicker = () => {
+    setShowDatePicker(true);
+  }; 
 
   useEffect(() => {
     handleFetchData();
@@ -113,12 +148,19 @@ export function RefrigeratorScreen({ onBack }: RefrigeratorScreenProps) {
       return;
     }
 
-    const ingredient: Ingredient = await createItem(newIngredient);
+    if (!isValidLocalDateString(newIngredient.expirationDate)) {
+      Alert.alert("알림", "유효한 유통기한을 선택해주세요. (YYYY-MM-DD)");
+      return;
+    }
+
+    const payload: NewIngredient = { ...newIngredient };
+
+    const ingredient: Ingredient = await createItem(payload);
 
     setIngredients([...ingredients, ingredient]);
     setNewIngredient({name: "", unit: "", expirationDate: "" });
     setShowAddModal(false);
-  };
+  }; 
 
   // 삭제
   const handleDeleteIngredient = (id: number) => {
@@ -141,8 +183,7 @@ export function RefrigeratorScreen({ onBack }: RefrigeratorScreenProps) {
 
   // 유통기한 표시 색상
   const getExpiryColor = (expiryDate: string) => {
-    const expiry = new Date(expiryDate);
-    expiry.setHours(0, 0, 0, 0);
+    const expiry = parseLocalDate(expiryDate) ?? (() => { const d = new Date(expiryDate); d.setHours(0,0,0,0); return d; })();
 
     if (expiry < today) {
       return "#dc2626"; // red-600
@@ -151,16 +192,17 @@ export function RefrigeratorScreen({ onBack }: RefrigeratorScreenProps) {
     } else {
       return "#4b5563"; // gray-600
     }
-  };
+  }; 
 
   // 날짜 포맷팅
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const parsed = parseLocalDate(dateString);
+    const date = parsed ?? new Date(dateString);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}.${month}.${day}`;
-  };
+  }; 
 
   // 추천 레시피 데이터 (reused from source)
   const allRecipes = [
@@ -378,12 +420,40 @@ export function RefrigeratorScreen({ onBack }: RefrigeratorScreenProps) {
                         value={newIngredient.unit}
                         onChangeText={(text) => setNewIngredient(prev => ({ ...prev, unit: text }))}
                     />
-                    <Input
-                        label="유통기한"
-                        placeholder="YYYY-MM-DD" // Improved placeholder for React Native Date picker alternative
-                        value={newIngredient.expirationDate}
-                        onChangeText={(text) => setNewIngredient(prev => ({ ...prev, expirationDate: text }))}
-                    />
+                    <View style={styles.dateField}>
+                      <Text style={styles.dateLabel}>유통기한</Text>
+                      <TouchableOpacity
+                          style={styles.datePickerButton}
+                          onPress={openDatePicker}
+                      >
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                            <Clock size={18} color="#4b5563" />
+                            <Text style={styles.datePickerText}>
+                              {newIngredient.expirationDate ? formatDate(newIngredient.expirationDate) : '유통기한 선택'}
+                            </Text>
+                          </View>
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Inline picker */}
+                    {showDatePicker && (
+                      <View style={{ marginTop: 8 }}>
+                        <DateTimePicker
+                          value={parseLocalDate(newIngredient.expirationDate) ?? new Date()}
+                          mode="date"
+                          display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
+                          onChange={(event: any, selectedDate?: Date | undefined) => {
+                            if (selectedDate) {
+                              setNewIngredient(prev => ({ ...prev, expirationDate: toLocalDateString(selectedDate) }));
+                            }
+                            // close picker after selection for both platforms
+                            setShowDatePicker(false);
+                          }}
+                        />
+                      </View>
+                    )} 
+
+
                     
                     <View style={styles.modalButtons}>
                         <Button 
@@ -661,6 +731,27 @@ const styles = StyleSheet.create({
   modalForm: {
       gap: 16,
   },
+  dateField: {
+      gap: 8,
+  },
+  dateLabel: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: '#09090b',
+  },
+  datePickerButton: {
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: '#e5e7eb',
+      backgroundColor: '#fff'
+  },
+  datePickerText: {
+      color: '#111827',
+      fontSize: 16,
+  },
+
   modalButtons: {
       flexDirection: 'row',
       gap: 8,

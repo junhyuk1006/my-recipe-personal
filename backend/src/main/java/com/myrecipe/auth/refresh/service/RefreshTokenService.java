@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public void save(String token, Long userId, LocalDateTime expiresAt){
+    public void save(String token, Long userId, Instant expiresAt){
         refreshTokenRepository.save(RefreshToken.builder().token(token).userId(userId).expiresAt(expiresAt).build());
     }
 
@@ -33,7 +33,7 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public void rotate(String oldRefreshToken, String newRefreshToken, Long userId, LocalDateTime expiresAt){
+    public void rotate(String oldRefreshToken, String newRefreshToken, Long userId, Instant expiresAt){
         refreshTokenRepository.deleteByToken(oldRefreshToken);
         refreshTokenRepository.save(RefreshToken.builder().token(newRefreshToken).userId(userId).expiresAt(expiresAt).build());
     }

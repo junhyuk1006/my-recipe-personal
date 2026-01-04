@@ -4,7 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Search } from 'lucide-react-native';
 import { RecipeBanner } from './components/RecipeBanner';
 import { PopularRecipes } from './components/PopularRecipes';
-import { useAuth } from '@/auth/AuthProvider';
+import { logout } from '../auth/api/auth.api';
+import { tokenStorage } from '../../lib/tokenStorage';
 
 interface HomeScreenProps {
   onLogoClick?: () => void;
@@ -27,6 +28,14 @@ export function HomeScreen({ onLogoClick, onRecipeClick, onRecipeListClick, onWr
     // 검색 로직 구현
   };
 
+  const handleLogoutClick = async () => {
+    const refreshToken = await tokenStorage.getRefresh();
+    if(refreshToken){
+      await logout(refreshToken);
+    }
+    onLogoutClick?.();
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       {/* <StatusBar barStyle="dark-content" backgroundColor="white" /> */}
@@ -38,7 +47,7 @@ export function HomeScreen({ onLogoClick, onRecipeClick, onRecipeListClick, onWr
             </View>
             <Text style={styles.brandTitle}>마이레시피</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={isLoggedIn ? onLogoutClick : onLoginClick}>
+        <TouchableOpacity onPress={isLoggedIn ? handleLogoutClick : onLoginClick}>
           <Text style={styles.loginText}>{isLoggedIn ? '로그아웃' : '로그인'}</Text>
         </TouchableOpacity>
       </View>

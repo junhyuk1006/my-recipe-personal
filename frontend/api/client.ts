@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {tokenStorage} from "../lib/tokenStorage";
+import { tokenStorage } from "../lib/tokenStorage";
 import { refresh } from '../features/auth/api/auth.api';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;

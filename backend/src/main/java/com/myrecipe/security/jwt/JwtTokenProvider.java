@@ -95,7 +95,7 @@ public class JwtTokenProvider {
         return "access".equals(tokenType);
     }
 
-    public LocalDateTime calculateRefreshTokenExpiry(){
-        return LocalDateTime.now().plusDays(refreshExpDays);
+    public Instant calculateRefreshTokenExpiry(){
+        return Instant.now().plus(Duration.ofDays(refreshExpDays));
     }
 }

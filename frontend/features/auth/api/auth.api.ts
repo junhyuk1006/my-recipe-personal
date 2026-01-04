@@ -63,6 +63,10 @@ export async function refresh(refreshToken: string) : Promise<RefreshResponse> {
   return res.data;
 }
 
+export async function logout(refreshToken: string) : Promise<void> {
+  await plain.post<void>('/api/auth/logout', { refreshToken });
+}
+
 // 화면에서 에러 메시지 뽑아 쓰기 편하게
 export function getApiErrorMessage(err: unknown, fallback = "요청에 실패했습니다."): string {
   console.log("API ERROR >>>", err);
